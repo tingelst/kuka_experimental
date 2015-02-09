@@ -18,44 +18,24 @@
 class UDPServer
 {
 public:
-
   UDPServer(std::string host, unsigned short port) : local_host_(host), local_port_(port), timeout_(false)
   {
-    /*
-     * socket: create the parent socket
-     */
     sockfd_ = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd_ < 0)
     {
       std::cout << "ERROR opening socket" << std::endl;
     }
-
-    /* setsockopt: Handy debugging trick that lets
-     * us rerun the server immediately after we kill it;
-     * otherwise we have to wait about 20 secs.
-     * Eliminates "ERROR on binding: Address already in use" error.
-     */
     optval = 1;
     setsockopt(sockfd_, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int));
-
-    /*
-     * build the server's Internet address
-     */
     memset(&serveraddr_, 0, sizeof(serveraddr_));
     serveraddr_.sin_family = AF_INET;
     serveraddr_.sin_addr.s_addr = inet_addr(local_host_.c_str());
     serveraddr_.sin_port = htons(local_port_);
-
-    /*
-     * bind: associate the parent socket with a port
-     */
     if (bind(sockfd_, (struct sockaddr *) &serveraddr_, sizeof(serveraddr_)) < 0)
     {
       std::cout << "ERROR on binding socket" << std::endl;
     }
-
     clientlen_ = sizeof(clientaddr_);
-
   }
 
   ~UDPServer()
@@ -81,9 +61,6 @@ public:
   ssize_t send(std::string& buffer)
   {
     ssize_t bytes = 0;
-    /*
-     * sendto: echo the input back to the client
-     */
     bytes = sendto(sockfd_, buffer.c_str(), buffer.size(), 0, (struct sockaddr *) &clientaddr_, clientlen_);
     if (bytes < 0)
     {
@@ -114,9 +91,6 @@ public:
 
       if (FD_ISSET(sockfd_, &read_fds))
       {
-        /*
-         * recvfrom: receive a UDP datagram from a client
-         */
         memset(buffer_, 0, BUFSIZE);
         bytes = recvfrom(sockfd_, buffer_, BUFSIZE, 0, (struct sockaddr *) &clientaddr_, &clientlen_);
         if (bytes < 0)
@@ -132,16 +106,12 @@ public:
     }
     else
     {
-      /*
-       * recvfrom: receive a UDP datagram from a client
-       */
       memset(buffer_, 0, BUFSIZE);
       bytes = recvfrom(sockfd_, buffer_, BUFSIZE, 0, (struct sockaddr *) &clientaddr_, &clientlen_);
       if (bytes < 0)
       {
         std::cout << "ERROR in recvfrom" << std::endl;
       }
-
     }
 
     buffer = std::string(buffer_);
@@ -155,12 +125,12 @@ private:
   bool timeout_;
   struct timeval tv_;
 
-  int sockfd_; /* socket */
-  socklen_t clientlen_; /* byte size of client's address */
-  struct sockaddr_in serveraddr_; /* server's addr */
-  struct sockaddr_in clientaddr_; /* client addr */
-  char buffer_[BUFSIZE]; /* message buf */
-  int optval; /* flag value for setsockopt */
+  int sockfd_;
+  socklen_t clientlen_;
+  struct sockaddr_in serveraddr_;
+  struct sockaddr_in clientaddr_;
+  char buffer_[BUFSIZE];
+  int optval;
 
 };
 

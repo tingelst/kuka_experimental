@@ -37,7 +37,7 @@
  * Author: Lars Tingelstad <lars.tingelstad@ntnu.no>
  */
 
-#include <kuka_hw/kuka_hardware_interface.h>
+#include <kuka_rsi_hw_interface/kuka_hardware_interface.h>
 
 bool g_quit = false;
 
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
   ROS_INFO_STREAM_NAMED("hardware_interface","Starting hardware interface...");
 
   //ros::init(argc, argv, "kuka_hardware_interface", ros::init_options::NoSigintHandler);
-  ros::init(argc, argv, "kuka_hardware_interface");
+  ros::init(argc, argv, "kuka_rsi_hardware_interface");
 
   // Add custom signal handlers
   //signal(SIGTERM, quitRequested);
@@ -64,8 +64,8 @@ int main(int argc, char** argv)
 
   ros::NodeHandle nh;
 
-  kuka_hw::KukaHardwareInterface kuka_hw;
-  kuka_hw.configure();
+  kuka_rsi_hw_interface::KukaHardwareInterface kuka_rsi_hw_interface;
+  kuka_rsi_hw_interface.configure();
 
   // Set up timers
   struct timespec ts = {0, 0};
@@ -78,9 +78,9 @@ int main(int argc, char** argv)
   ros::Time now(ts.tv_sec, ts.tv_nsec);
   ros::Duration period(1.0);
 
-  controller_manager::ControllerManager controller_manager(&kuka_hw, nh);
+  controller_manager::ControllerManager controller_manager(&kuka_rsi_hw_interface, nh);
 
-  kuka_hw.start();
+  kuka_rsi_hw_interface.start();
 
   // Get current time and elapsed time since last read
   if (!clock_gettime(CLOCK_MONOTONIC, &ts))
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
   //while (!g_quit)
   {
     // Receive current state from robot
-    if (!kuka_hw.read(now, period))
+    if (!kuka_rsi_hw_interface.read(now, period))
     {
       ROS_FATAL_NAMED("kuka_hardware_interface", "Failed to read state from robot. Shutting down!");
       ros::shutdown();
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
     controller_manager.update(now, period);
 
     // Send new setpoint to robot
-    kuka_hw.write(now, period);
+    kuka_rsi_hw_interface.write(now, period);
   }
 
   //ROS_INFO_STREAM_NAMED("hardware_interface","Stopping spinner...");

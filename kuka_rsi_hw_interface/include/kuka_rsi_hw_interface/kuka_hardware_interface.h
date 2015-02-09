@@ -15,8 +15,8 @@
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
  *   * Neither the name of the Norwegian University of Science and
- *     Technology, nor the names of its contributors may be used to 
- *     endorse or promote products derived from this software without 
+ *     Technology, nor the names of its contributors may be used to
+ *     endorse or promote products derived from this software without
  *     specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -62,13 +62,13 @@
 #include <sys/mman.h>
 
 // UDP server
-#include <kuka_hw/udp_server.h>
+#include <kuka_rsi_hw_interface/udp_server.h>
 
 // RSI
-#include <kuka_hw/rsi_state.h>
-#include <kuka_hw/rsi_command.h>
+#include <kuka_rsi_hw_interface/rsi_state.h>
+#include <kuka_rsi_hw_interface/rsi_command.h>
 
-namespace kuka_hw
+namespace kuka_rsi_hw_interface
 {
 
 class KukaHardwareInterface : public hardware_interface::RobotHW
@@ -127,6 +127,6 @@ public:
 
 };
 
-} // namespace kuka_hw
+} // namespace kuka_rsi_hw_interface
 
 #endif

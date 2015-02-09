@@ -36,9 +36,9 @@
  * Author: Lars Tingelstad <lars.tingelstad@ntnu.no>
 */
 
-#include <kuka_hw/kuka_hardware_interface.h>
+#include <kuka_rsi_hw_interface/kuka_hardware_interface.h>
 
-namespace kuka_hw
+namespace kuka_rsi_hw_interface
 {
 
 KukaHardwareInterface::KukaHardwareInterface()
@@ -83,6 +83,7 @@ KukaHardwareInterface::~KukaHardwareInterface()
 {
 
 }
+
 
 bool KukaHardwareInterface::read(const ros::Time time, const ros::Duration period)
 {
@@ -162,4 +163,4 @@ void KukaHardwareInterface::configure()
   }
 }
 
-} // namespace kuka_hw
+} // namespace kuka_rsi_hardware_interface

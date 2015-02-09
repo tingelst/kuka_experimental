@@ -42,7 +42,7 @@
 #include <string>
 #include <tinyxml.h>
 
-namespace kuka_hw
+namespace kuka_rsi_hw_interface
 {
 
 class RSIState
@@ -59,11 +59,9 @@ public:
     initial_cart_position(6, 0.0)
   {
     xml_doc_.resize(1024);
-    // intentionally empty
   }
 
   RSIState(std::string xml_doc);
-
   // AIPOS
   std::vector<double> positions;
   // ASPos
@@ -126,6 +124,6 @@ RSIState::RSIState(std::string xml_doc) :
   ipoc = std::stoull(ipoc_el->FirstChild()->Value());
 }
 
-} // namespace kuka_hw
+} // namespace kuka_rsi_hw_interface
 
 #endif
