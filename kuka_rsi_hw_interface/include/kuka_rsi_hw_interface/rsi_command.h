@@ -34,10 +34,10 @@
 
 /*
  * Author: Lars Tingelstad <lars.tingelstad@ntnu.no>
-*/
+ */
 
-#ifndef KUKA_CONTROL_RSI_COMMAND_
-#define KUKA_CONTROL_RSI_COMMAND_
+#ifndef KUKA_RSI_HW_INTERFACE_RSI_COMMAND_
+#define KUKA_RSI_HW_INTERFACE_RSI_COMMAND_
 
 #include <tinyxml.h>
 #include <vector>
@@ -71,17 +71,7 @@ RSICommand::RSICommand(std::vector<double> joint_position_correction, unsigned l
   el->SetAttribute("A4", std::to_string(joint_position_correction[3]));
   el->SetAttribute("A5", std::to_string(joint_position_correction[4]));
   el->SetAttribute("A6", std::to_string(joint_position_correction[5]));
-/*
- *
- *  // Double attribut - DEBUG
- *  el->SetDoubleAttribute("A1", joint_position_correction[0]);
- *  el->SetDoubleAttribute("A2", joint_position_correction[1]);
- *  el->SetDoubleAttribute("A3", joint_position_correction[2]);
- *  el->SetDoubleAttribute("A4", joint_position_correction[3]);
- *  el->SetDoubleAttribute("A5", joint_position_correction[4]);
- *  el->SetDoubleAttribute("A6", joint_position_correction[5]);
- *
- */
+
   root->LinkEndChild(el);
   el = new TiXmlElement("IPOC");
   el->LinkEndChild(new TiXmlText(std::to_string(ipoc)));

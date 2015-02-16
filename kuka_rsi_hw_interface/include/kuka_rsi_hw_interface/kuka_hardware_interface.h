@@ -35,10 +35,10 @@
 
 /*
  * Author: Lars Tingelstad
-*/
+ */
 
-#ifndef KUKA_CONTROL_KUKA_HARDWARE_INTERFACE_
-#define KUKA_CONTROL_KUKA_HARDWARE_INTERFACE_
+#ifndef KUKA_RSI_HARDWARE_INTERFACE_KUKA_HARDWARE_INTERFACE_
+#define KUKA_RSI_HARDWARE_INTERFACE_KUKA_HARDWARE_INTERFACE_
 
 // STL
 #include <vector>
@@ -52,7 +52,6 @@
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
-#include <hardware_interface/force_torque_sensor_interface.h>
 
 // Timers
 //#include <stdlib.h>
@@ -70,6 +69,9 @@
 
 namespace kuka_rsi_hw_interface
 {
+
+static const double RAD2DEG = 57.295779513082323;
+static const double DEG2RAD = 0.017453292519943295;
 
 class KukaHardwareInterface : public hardware_interface::RobotHW
 {
@@ -111,8 +113,8 @@ private:
   double loop_hz_;
 
   // Interfaces
-  hardware_interface::JointStateInterface js_interface_;
-  hardware_interface::PositionJointInterface pj_interface_;
+  hardware_interface::JointStateInterface joint_state_interface_;
+  hardware_interface::PositionJointInterface position_joint_interface_;
 
 public:
 
@@ -123,7 +125,6 @@ public:
   void configure();
   bool read(const ros::Time time, const ros::Duration period);
   bool write(const ros::Time time, const ros::Duration period);
-
 
 };
 

@@ -32,58 +32,52 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
+
 /*
  * Author: Lars Tingelstad <lars.tingelstad@ntnu.no>
-*/
+ */
 
 #include <kuka_rsi_hw_interface/kuka_hardware_interface.h>
 
 namespace kuka_rsi_hw_interface
 {
 
-KukaHardwareInterface::KukaHardwareInterface()
-  : joint_position_(6, 0.0),
-    joint_velocity_(6, 0.0),
-    joint_effort_(6, 0.0),
-    joint_position_command_(6, 0.0),
-    joint_velocity_command_(6, 0.0),
-    joint_effort_command_(6, 0.0),
-    joint_names_(6),
-    rsi_initial_joint_positions_(6, 0.0),
-    rsi_joint_position_corrections_(6, 0.0),
-    ipoc_(0),
-    n_dof_(6)
+KukaHardwareInterface::KukaHardwareInterface() :
+    joint_position_(6, 0.0), joint_velocity_(6, 0.0), joint_effort_(6, 0.0), joint_position_command_(6, 0.0), joint_velocity_command_(
+        6, 0.0), joint_effort_command_(6, 0.0), joint_names_(6), rsi_initial_joint_positions_(6, 0.0), rsi_joint_position_corrections_(
+        6, 0.0), ipoc_(0), n_dof_(6)
 {
   in_buffer_.resize(1024);
   out_buffer_.resize(1024);
   remote_host_.resize(1024);
   remote_port_.resize(1024);
 
-   //Create ros_control interfaces
+  nh_.getParam("controller_joint_names", joint_names_);
+  //Create ros_control interfaces
   for (std::size_t i = 0; i < n_dof_; ++i)
   {
-    joint_names_[i] = "joint_" + std::to_string(i + 1);
     // Create joint state interface for all joints
-    js_interface_.registerHandle(hardware_interface::JointStateHandle(
-          joint_names_[i], &joint_position_[i], &joint_velocity_[i], &joint_effort_[i]));
+    joint_state_interface_.registerHandle(
+        hardware_interface::JointStateHandle(joint_names_[i], &joint_position_[i], &joint_velocity_[i],
+                                             &joint_effort_[i]));
 
     // Create joint position control interface
-    pj_interface_.registerHandle(hardware_interface::JointHandle(
-          js_interface_.getHandle(joint_names_[i]), &joint_position_command_[i]));
+    position_joint_interface_.registerHandle(
+        hardware_interface::JointHandle(joint_state_interface_.getHandle(joint_names_[i]),
+                                        &joint_position_command_[i]));
   }
 
   // Register interfaces
-  registerInterface(&js_interface_);
-  registerInterface(&pj_interface_);
+  registerInterface(&joint_state_interface_);
+  registerInterface(&position_joint_interface_);
 
-  ROS_INFO_STREAM_NAMED("hardware_interface", "Loaded kuka_hardware_interface");
+  ROS_INFO_STREAM_NAMED("hardware_interface", "Loaded kuka_rsi_hardware_interface");
 }
 
 KukaHardwareInterface::~KukaHardwareInterface()
 {
 
 }
-
 
 bool KukaHardwareInterface::read(const ros::Time time, const ros::Duration period)
 {
@@ -97,7 +91,7 @@ bool KukaHardwareInterface::read(const ros::Time time, const ros::Duration perio
   rsi_state_ = RSIState(in_buffer_);
   for (std::size_t i = 0; i < n_dof_; ++i)
   {
-    joint_position_[i] = 0.017453292519943295 * rsi_state_.positions[i];
+    joint_position_[i] = DEG2RAD * rsi_state_.positions[i];
   }
   ipoc_ = rsi_state_.ipoc;
 
@@ -110,7 +104,7 @@ bool KukaHardwareInterface::write(const ros::Time time, const ros::Duration peri
 
   for (std::size_t i = 0; i < n_dof_; ++i)
   {
-    rsi_joint_position_corrections_[i] = (57.295779513082323 * joint_position_command_[i]) - rsi_initial_joint_positions_[i];
+    rsi_joint_position_corrections_[i] = (RAD2DEG * joint_position_command_[i]) - rsi_initial_joint_positions_[i];
   }
 
   out_buffer_ = RSICommand(rsi_joint_position_corrections_, ipoc_).xml_doc;
@@ -131,17 +125,13 @@ void KukaHardwareInterface::start()
   rsi_state_ = RSIState(in_buffer_);
   for (std::size_t i = 0; i < n_dof_; ++i)
   {
-      joint_position_[i] = 0.017453292519943295 * rsi_state_.positions[i];
-      joint_position_command_[i] = joint_position_[i];
-      rsi_initial_joint_positions_[i] = rsi_state_.initial_positions[i];
+    joint_position_[i] = DEG2RAD * rsi_state_.positions[i];
+    joint_position_command_[i] = joint_position_[i];
+    rsi_initial_joint_positions_[i] = rsi_state_.initial_positions[i];
   }
-
   ipoc_ = rsi_state_.ipoc;
-
   out_buffer_ = RSICommand(rsi_joint_position_corrections_, ipoc_).xml_doc;
-
   server_->send(out_buffer_);
-
   // Set receive timeout to 1 second
   server_->set_timeout(1000);
   ROS_INFO_STREAM_NAMED("kuka_hardware_interface", "Got connection from robot");
@@ -151,10 +141,10 @@ void KukaHardwareInterface::start()
 void KukaHardwareInterface::configure()
 {
   std::string port;
-  // TODO rosparam namespace here?
   if (nh_.getParam("rsi/address", local_host_) && nh_.getParam("rsi/port", port))
   {
-    ROS_INFO_STREAM_NAMED("kuka_hardware_interface", "Setting up RSI server on: (" << local_host_ << ", " << port << ")");
+    ROS_INFO_STREAM_NAMED("kuka_hardware_interface",
+                          "Setting up RSI server on: (" << local_host_ << ", " << port << ")");
     local_port_ = std::stoi(port);
   }
   else

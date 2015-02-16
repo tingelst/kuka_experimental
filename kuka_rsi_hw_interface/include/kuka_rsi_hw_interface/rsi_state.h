@@ -36,8 +36,8 @@
  * Author: Lars Tingelstad <lars.tingelstad@ntnu.no>
 */
 
-#ifndef KUKA_CONTROL_RSI_STATE_
-#define KUKA_CONTROL_RSI_STATE_
+#ifndef KUKA_RSI_HW_INTERFACE_RSI_STATE_
+#define KUKA_RSI_HW_INTERFACE_RSI_STATE_
 
 #include <string>
 #include <tinyxml.h>

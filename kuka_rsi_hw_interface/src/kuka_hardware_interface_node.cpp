@@ -39,25 +39,11 @@
 
 #include <kuka_rsi_hw_interface/kuka_hardware_interface.h>
 
-bool g_quit = false;
-
-void quitRequested(int sig)
-{
-  g_quit = true;
-}
-
 int main(int argc, char** argv)
 {
+  ROS_INFO_STREAM_NAMED("hardware_interface", "Starting hardware interface...");
 
-  ROS_INFO_STREAM_NAMED("hardware_interface","Starting hardware interface...");
-
-  //ros::init(argc, argv, "kuka_hardware_interface", ros::init_options::NoSigintHandler);
   ros::init(argc, argv, "kuka_rsi_hardware_interface");
-
-  // Add custom signal handlers
-  //signal(SIGTERM, quitRequested);
-  //signal(SIGINT, quitRequested);
-  //signal(SIGHUP, quitRequested);
 
   ros::AsyncSpinner spinner(1);
   spinner.start();
@@ -69,11 +55,10 @@ int main(int argc, char** argv)
 
   // Set up timers
   struct timespec ts = {0, 0};
-  if(clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
   {
     ROS_FATAL("Failed to poll clock!");
   }
-
   ros::Time last(ts.tv_sec, ts.tv_nsec);
   ros::Time now(ts.tv_sec, ts.tv_nsec);
   ros::Duration period(1.0);
@@ -96,7 +81,7 @@ int main(int argc, char** argv)
   }
 
   // Run as fast as possible
-  while(ros::ok())
+  while (ros::ok())
   //while (!g_quit)
   {
     // Receive current state from robot
@@ -104,8 +89,6 @@ int main(int argc, char** argv)
     {
       ROS_FATAL_NAMED("kuka_hardware_interface", "Failed to read state from robot. Shutting down!");
       ros::shutdown();
-      //g_quit = true;
-      //break;
     }
 
     // Get current time and elapsed time since last read
@@ -129,10 +112,8 @@ int main(int argc, char** argv)
     kuka_rsi_hw_interface.write(now, period);
   }
 
-  //ROS_INFO_STREAM_NAMED("hardware_interface","Stopping spinner...");
-  //spinner.stop();
-
-  ROS_INFO_STREAM_NAMED("hardware_interface","Shutting down.");
+  spinner.stop();
+  ROS_INFO_STREAM_NAMED("hardware_interface", "Shutting down.");
 
   return 0;
 
