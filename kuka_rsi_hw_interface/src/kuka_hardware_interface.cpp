@@ -88,6 +88,11 @@ bool KukaHardwareInterface::read(const ros::Time time, const ros::Duration perio
     return false;
   }
 
+  if (rt_rsi_pub_->trylock()){
+    rt_rsi_pub_->msg_.data = in_buffer_;
+    rt_rsi_pub_->unlockAndPublish();
+  }
+
   rsi_state_ = RSIState(in_buffer_);
   for (std::size_t i = 0; i < n_dof_; ++i)
   {
@@ -151,6 +156,7 @@ void KukaHardwareInterface::configure()
   {
     ROS_ERROR("Failed to get RSI address and port from parameters server!");
   }
+  rt_rsi_pub_.reset(new realtime_tools::RealtimePublisher<std_msgs::String>(nh_, "rsi_xml_doc", 3));
 }
 
 } // namespace kuka_rsi_hardware_interface

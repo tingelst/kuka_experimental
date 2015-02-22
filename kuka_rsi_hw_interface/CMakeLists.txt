@@ -6,6 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 find_package(catkin REQUIRED COMPONENTS
   controller_manager
   hardware_interface
+  realtime_tools
   joint_limits_interface
   moveit_msgs
   moveit_ros_planning_interface

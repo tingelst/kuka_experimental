@@ -46,8 +46,11 @@
 
 // ROS
 #include <ros/ros.h>
+#include <std_msgs/String.h>
+
 
 // ros_control
+#include <realtime_tools/realtime_publisher.h>
 #include <controller_manager/controller_manager.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
@@ -98,6 +101,8 @@ private:
   std::vector<double> rsi_initial_joint_positions_;
   std::vector<double> rsi_joint_position_corrections_;
   unsigned long long ipoc_;
+
+  std::unique_ptr<realtime_tools::RealtimePublisher<std_msgs::String> > rt_rsi_pub_;
 
   std::unique_ptr<UDPServer> server_;
   std::string local_host_;
