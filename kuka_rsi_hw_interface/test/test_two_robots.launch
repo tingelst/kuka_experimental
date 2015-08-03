@@ -16,7 +16,7 @@
     <rosparam file="$(find kuka_rsi_hw_interface)/test/ag1_controller_joint_names.yaml" command="load"/>
     <!-- Load controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
-        args="position_trajectory_controller joint_state_controller"/>
+        args="position_trajectory_controller joint_state_controller --shutdown-timeout 1"/>
     <!-- Load robot state publisher -->
     <!--<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />-->
     </group>
@@ -36,7 +36,7 @@
     <rosparam file="$(find kuka_rsi_hw_interface)/test/ag2_controller_joint_names.yaml" command="load"/>
     <!-- Load controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
-        args="position_trajectory_controller joint_state_controller"/>
+        args="position_trajectory_controller joint_state_controller --shutdown-timeout 1"/>
     <!-- Load robot state publisher -->
     <!--<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />-->
     </group>

@@ -1,6 +1,6 @@
 <launch>
-    <!-- Load the controllers -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-        output="screen" args="position_trajectory_controller joint_state_controller force_torque_sensor_controller">
-    </node>
+  <!-- Load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner"
+    args="position_trajectory_controller joint_state_controller --shutdown-timeout 1"
+    respawn="false" output="screen" />
 </launch>
